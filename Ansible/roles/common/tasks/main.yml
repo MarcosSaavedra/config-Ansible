@@ -1,0 +1,48 @@
+---
+- name: Install common packages, upgrade if available
+  package: name={{ item }} state=latest update_cache=true
+  loop: "{{ packages }}"
+  tags:
+    - packages
+
+- name: Open HTTP port for the webservers
+  firewalld: service=http permanent=true state=enabled
+  vars:
+    ansible_python_interpreter: '/usr/bin/python3'
+  tags:
+    - webserver_port
+
+- name: Ensure group "Jenkins" exists
+  ansible.builtin.group:
+    name: jenkins
+    state: present
+  tags:
+    - jenkins_user
+
+- name: Create Jenkins user
+  user:
+    name: jenkins
+    shell: /bin/bash
+    group: jenkins
+  register: jenkins_user
+  tags:
+    - jenkins_user
+
+- name: Generate SSH key locally
+  openssh_keypair:
+    path: "/tmp/id_rsa.jenkins"
+    type: rsa
+    size: 2048
+    state: present
+    force: false
+  delegate_to: localhost
+  tags:
+    - jenkins_user
+
+- name: Ensure we can connect using Jenkins user and key
+  authorized_key:
+    user: jenkins
+    key: "{{ lookup ('file', '/tmp/id_rsa.jenkins.pub') }}"
+    state: present
+  tags:
+    - jenkins_user

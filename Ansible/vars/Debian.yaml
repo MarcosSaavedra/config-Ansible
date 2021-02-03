@@ -1,0 +1,9 @@
+---
+
+# Packages
+packages:
+  - apache2
+  - tmux
+  - vim
+  - firewalld
+  - openjdk-8-jdk

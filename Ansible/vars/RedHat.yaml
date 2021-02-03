@@ -1,0 +1,8 @@
+---
+
+# Packages
+packages:
+  - httpd
+  - tmux
+  - vim
+  - python-firewall

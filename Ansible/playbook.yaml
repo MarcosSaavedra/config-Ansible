@@ -1,0 +1,23 @@
+---
+- hosts: all
+  # Become root user
+  become: true
+  # Enable Gathering facts
+  gather_facts: true
+  # Variables
+  vars_files:
+    - ["vars/{{ ansible_os_family }}.yaml"]
+  # List of tasks to be executed
+  tasks:
+    - name: Install Nginx server on RHEL like servers
+      become: true
+      yum:
+        name: nginx
+        state: absent
+        tags: webserver
+    - name: Remove wget from RHEL like
+      become: true
+      apt:
+        name: nginx
+        state: absent
+        tags: webserver
